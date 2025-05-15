@@ -176,9 +176,11 @@ def serve_static_files(filename):
 
 
 
-# --- Running the App ---
+# --- Running the App (Gunicorn will handle this on Railway) ---
 if __name__ == '__main__':
-    # Important: Call db.create_all() inside app_context if running directly for the first time
-    # However, it's better to use Flask CLI for this or a dedicated init script.
-    # For simplicity here, we'll use the /init_db route once.
-    app.run(debug=False) # debug=True is for development only!
+    # This block is mainly for local development
+    # On Railway, Gunicorn calls the 'app' object directly
+    # You might want to create tables locally if they don't exist for dev
+    with app.app_context():
+        db.create_all() # Creates tables if they don't exist, for local dev
+    app.run(debug=False, host='0.0.0.0', port=os.environ.get('PORT', 5000))
