@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anonymous Reviews</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Review a Subject</h1>
+
+        <!-- Search Section -->
+        <div class="search-section">
+            <h2>Search for a Subject</h2>
+            <input type="text" id="searchInput" placeholder="Enter subject name...">
+            <button id="searchButton">Search</button>
+            <div id="searchResults">
+                <!-- Search results will be populated here -->
+            </div>
+            <p id="noResultsMessage" style="display:none;">No subjects found. You can add it below.</p>
+        </div>
+
+        <!-- Add New Subject Section (Initially hidden or shown based on search) -->
+        <div class="add-subject-section" id="addSubjectSection" style="display:none;">
+            <h2>Add New Subject</h2>
+            <input type="text" id="newSubjectName" placeholder="Subject Name">
+            <button id="addSubjectButton">Add Subject</button>
+            <p id="addSubjectStatus"></p>
+        </div>
+
+        <!-- Selected Subject & Reviews Section -->
+        <div class="selected-subject-section" id="selectedSubjectSection" style="display:none;">
+            <h2 id="selectedSubjectName"></h2>
+            <p>Average Rating: <span id="averageRating">N/A</span></p>
+
+            <h3>Reviews:</h3>
+            <div id="reviewsList">
+                <!-- Reviews will be populated here -->
+            </div>
+
+            <h3>Add Your Review:</h3>
+            <div class="add-review-form">
+                <label for="rating">Rating (1-5):</label>
+                <select id="rating">
+                    <option value="1">1 Star</option>
+                    <option value="2">2 Stars</option>
+                    <option value="3">3 Stars</option>
+                    <option value="4">4 Stars</option>
+                    <option value="5">5 Stars</option>
+                </select>
+                <br>
+                <label for="comment">Comment (max 280 chars):</label>
+                <textarea id="comment" rows="3" maxlength="280"></textarea>
+                <br>
+                <label for="secretAnswer">In the "Others" section, in "About You", there is a question regarding a phenomenon discovered by two scientists. Write the first surname</label>
+                <input type="text" id="secretAnswer" placeholder="Your answer here">
+                <br>
+                <button id="submitReviewButton">Submit Review</button>
+                <p id="reviewStatus"></p>
+            </div>
+        </div>
+    </div>
+    <footer>
+    <p><a href="https://www.paypal.com/donate/?hosted_button_id=H7CNKZGN4KX6Y">Donations will help to keep this website alive</a></p>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>
