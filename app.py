@@ -11,12 +11,24 @@ CORS(app)
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///reviews.db' # This will create reviews.db in your project folder
 # app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-data_dir = os.environ.get('RENDER_DISK_PATH') or os.path.join(os.getcwd(), 'data')
-if not os.path.exists(data_dir):
-    os.makedirs(data_dir)
-db_path = os.path.join(data_dir, 'reviews.db')
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
+RAILWAY_VOLUME_MOUNT_PATH = '/data'
+DB_NAME = 'reviews.db'
+db_path = os.path.join(RAILWAY_VOLUME_MOUNT_PATH, DB_NAME)
 
+# Ensure the directory for the database exists (important for the first run)
+if not os.path.exists(RAILWAY_VOLUME_MOUNT_PATH):
+    try:
+        os.makedirs(RAILWAY_VOLUME_MOUNT_PATH, exist_ok=True)
+        print(f"Created directory: {RAILWAY_VOLUME_MOUNT_PATH}")
+    except OSError as e:
+        print(f"Error creating directory {RAILWAY_VOLUME_MOUNT_PATH}: {e}")
+        # Potentially raise an error or use a fallback for local dev if desired
+        # For now, we'll assume Railway creates the mount point, but the app needs to create subdirs if any.
+        # If /data is the root of the volume, os.makedirs('/data') might not be needed if Railway ensures it.
+
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
+print(f"Using database at: {app.config['SQLALCHEMY_DATABASE_URI']}") # Good for debugging startup
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 CORRECT_SECRET_ANSWER = "Crispin".lower()
