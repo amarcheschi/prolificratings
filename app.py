@@ -2,12 +2,21 @@ from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS # Import CORS
 from datetime import datetime
+import os
+from flask import send_from_directory
 
 app = Flask(__name__)
 CORS(app)
 # Configure SQLite database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///reviews.db' # This will create reviews.db in your project folder
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///reviews.db' # This will create reviews.db in your project folder
+# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+data_dir = os.environ.get('RENDER_DISK_PATH') or os.path.join(os.getcwd(), 'data')
+if not os.path.exists(data_dir):
+    os.makedirs(data_dir)
+db_path = os.path.join(data_dir, 'reviews.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
+
 db = SQLAlchemy(app)
 
 CORRECT_SECRET_ANSWER = "Crispin".lower()
@@ -141,10 +150,23 @@ def get_reviews(subject_id):
     reviews = Review.query.filter_by(subject_id=subject.id).order_by(Review.created_at.desc()).all()
     return jsonify([review.to_dict() for review in reviews]), 200
 
+# Serve frontend static files (if not in a 'static' folder)
+@app.route('/')
+def serve_index():
+    return send_from_directory('.', 'index.html') # Serve index.html from root
+
+@app.route('/<path:filename>') # Catches style.css, script.js etc.
+def serve_static_files(filename):
+    # Basic security: only allow specific known files or extensions
+    if filename in ['style.css', 'script.js'] or filename.startswith('favicon.'): # Add other known files
+        return send_from_directory('.', filename)
+    return "File not found", 404
+
+
 
 # --- Running the App ---
 if __name__ == '__main__':
     # Important: Call db.create_all() inside app_context if running directly for the first time
     # However, it's better to use Flask CLI for this or a dedicated init script.
     # For simplicity here, we'll use the /init_db route once.
-    app.run(debug=True) # debug=True is for development only!
+    app.run(debug=False) # debug=True is for development only!
